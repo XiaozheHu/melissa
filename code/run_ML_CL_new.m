@@ -150,7 +150,8 @@ for i = 1:length(folds)
     % compute flame embedding
     fprintf('Compute Flame embedding \n');
     tic;
-    [x_flame, d_flame] = svd_embed_nolog(walks_argumented, options.embedding.ndim);
+    %[x_flame, d_flame] = svd_embed_nolog(walks_argumented, options.embedding.ndim);
+    [x_flame, d_flame] = svd_embed(walks_argumented, options.embedding.ndim);
     toc;
     
     clear walks_argumented;
