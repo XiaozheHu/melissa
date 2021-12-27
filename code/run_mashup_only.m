@@ -13,7 +13,7 @@ options.org = 'yeast';
 % which type of annotations to use
 % options: {bp, mf, cc} for human GO,
 %          {level1, level2, level3} for yeast MIPS
-options.onttype = 'mf'; 
+options.onttype = 'cc'; 
 
 % consider terms in a specific size range (GO only)
 % examples: [11 30], [31 100], [101 300]
@@ -23,7 +23,7 @@ options.ontsize = [101 300];
 k=10;
 
 % Number of bi-clusters to create (-1 to not bi-cluster)
-options.num_clusters = 4; 
+options.num_clusters = 0; 
 
 % use SVD approximation for Mashup
 % recommended: true for human, false for yeast
@@ -39,10 +39,10 @@ options.embedding.svd_approx = true;
 options.embedding.ndim = 1000; 
 
 % the weight of the edges connecting dummy nodes to true nodes
-options.embedding.mustlink_penalty = 1; 
+options.embedding.mustlink_penalty = 0; 
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 10; 
+options.embedding.cannotlink_penalty = 0; 
 
 % chance that the random walk restarts itself
 options.walk.restart_prob = 0.5;
@@ -102,7 +102,8 @@ load('walks.mat')
 % mu embedding is shared across all folds so we take it before cross-val
 fprintf('Compute Mashup embedding \n');
 tic;
-[x_mu, d_mu] = svd_embed(walks, options.embedding.ndim);
+%[x_mu, d_mu] = svd_embed(walks, options.embedding.ndim);
+[x_mu, d_mu] = svd_embed_RRT(walks, options.embedding.ndim);
 toc;
 %load('human_mashup_embed.mat');
 
@@ -119,11 +120,6 @@ n_dim_test = floor(options.embedding.ndim / dim_step);
 acc_mu = zeros(length(folds), n_dim_test);
 f1_mu  = zeros(length(folds), n_dim_test);
 auc_mu = zeros(length(folds), n_dim_test);
-
-% melissa results
-acc_melissa = zeros(length(folds), n_dim_test);
-f1_melissa  = zeros(length(folds), n_dim_test);
-auc_melissa = zeros(length(folds), n_dim_test);
 
 weighted = true;
 fprintf('weighted: true \n');
@@ -143,25 +139,25 @@ for i = 1:length(folds)
     training_labels = anno.*(train_filt.');
     
     % performe biclustering
-    [gene_clusters, label_clusters] = bicluster(training_labels, train_filt, options);
+    %[gene_clusters, label_clusters] = bicluster(training_labels, train_filt, options);
 
     % argument the network and run random walk
-    fprintf('Compute argumented random walk \n');
-    tic;
-    walks_argumented = compute_rwr_argumented(network_files, ngene, gene_clusters, options);
-    toc;
+    %fprintf('Compute argumented random walk \n');
+    %tic;
+    %walks_argumented = compute_rwr_argumented(network_files, ngene, gene_clusters, options);
+    %toc;
     
-    % compute melissa embedding
-    fprintf('Compute Melissa embedding \n');
-    tic;
-    if (options.embedding.cannotlink_penalty > 0)
-        [x_melissa, d_melissa] = svd_embed_CL(walks_argumented, options.embedding.ndim);
-    else
-        [x_melissa, d_melissa] = svd_embed(walks_argumented, options.embedding.ndim);
-    end
-    toc;
+    % compute Melissa embedding
+    %fprintf('Compute Melissa embedding \n');
+    %tic;
+    %if (options.embedding.cannotlink_penalty > 0)
+    %    [x_melissa, d_melissa] = svd_embed_CL(walks_argumented, options.embedding.ndim);
+    %else
+    %    [x_melissa, d_melissa] = svd_embed(walks_argumented, options.embedding.ndim);
+    %end
+    %toc;
     
-    clear walks_argumented;
+    %clear walks_argumented;
     
     %-------------------------------
     % Perform prediction
@@ -172,7 +168,7 @@ for i = 1:length(folds)
         fprintf('Using embeded dimension = %f \n', embed_dim);
          
         %-------------------------------
-        % Perform Mashup for comparison
+        % Perform Mashup
         %-------------------------------
         fprintf('[Performing Mashup]\n');
         [dist_mat,knn] = compute_knn_labelled(x_mu(1:embed_dim,:), k, train_filt);
@@ -182,16 +178,16 @@ for i = 1:length(folds)
         auc_mu(i,j) = auc;
     
         %-------------------------------
-        % Perform Melissa 
+        % Perform Melissa
         %-------------------------------
-        fprintf('[Perfoming Melissa]\n');
-        [dist_mat,knn] = compute_knn_labelled(x_melissa(1:embed_dim,1:ngene), k, train_filt);
-        %[acc, f1, auc] = matrix_majority_voting(anno, test_filt,train_filt, knn, dist_mat, weighted);
-        [acc, f1, auc] = fun_pred_majority_voting_mashup_backup(anno, test_filt,train_filt, knn, dist_mat, class_score_mashup, weighted);
+        %fprintf('[Perfoming Melissa]\n');
+        %[dist_mat,knn] = compute_knn_labelled(x_melissa(1:embed_dim,1:ngene), k, train_filt);
+        % %[acc, f1, auc] = matrix_majority_voting(anno, test_filt,train_filt, knn, dist_mat, weighted);
+        %[acc, f1, auc] = fun_pred_majority_voting_mashup_backup(anno, test_filt,train_filt, knn, dist_mat, class_score_mashup, weighted);
 
-        acc_melissa(i,j) = acc;
-        f1_melissa(i,j)  = f1;
-        auc_melissa(i,j) = auc;
+        %acc_melissa(i,j) = acc;
+        %f1_melissa(i,j)  = f1;
+        %auc_melissa(i,j) = auc;
     
     end
 
@@ -202,42 +198,28 @@ for i = 1:length(folds)
     fprintf('[Mashup auc mean = %f ]\n', mean(auc_mu(:,i)));
     fprintf('[Mashup auc std = %f ]\n', std(auc_mu(:,i)));
 
-    fprintf('[Melissa accuracy mean = %f ]\n', mean(acc_melissa(:,i)));
-    fprintf('[Melissa accuracy std = %f ]\n', std(acc_melissa(:,i)));
-    fprintf('[Melissa f1 mean = %f ]\n', mean(f1_melissa(:,i)));
-    fprintf('[Melissa f1 std = %f ]\n', std(f1_melissa(:,i)));
-    fprintf('[Melissa auc mean = %f ]\n', mean(auc_melissa(:,i)));
-    fprintf('[Melissa auc std = %f ]\n', std(auc_melissa(:,i)));    
+%     fprintf('[Smash accuracy mean = %f ]\n', mean(acc_melissa(:,i)));
+%     fprintf('[Smash accuracy std = %f ]\n', std(acc_melissa(:,i)));
+%     fprintf('[Smash f1 mean = %f ]\n', mean(f1_melissa(:,i)));
+%     fprintf('[Smash f1 std = %f ]\n', std(f1_melissa(:,i)));
+%     fprintf('[Smash auc mean = %f ]\n', mean(auc_melissa(:,i)));
+%     fprintf('[Smash auc std = %f ]\n', std(auc_melissa(:,i)));    
     
 end 
-
-% fprintf('[Mashup accuracy mean = %f ]\n', mean(acc_mu));
-% fprintf('[Mashup accuracy std = %f ]\n', std(acc_mu));
-% fprintf('[Mashup f1 mean = %f ]\n', mean(f1_mu));
-% fprintf('[Mashup f1 std = %f ]\n', std(f1_mu));
-% fprintf('[Mashup auc mean = %f ]\n', mean(auc_mu));
-% fprintf('[Mashup auc std = %f ]\n', std(auc_mu));
-% 
-% fprintf('[Melissa accuracy mean = %f ]\n', mean(acc_melissa));
-% fprintf('[Melissa accuracy std = %f ]\n', std(acc_melissa));
-% fprintf('[Melissa f1 mean = %f ]\n', mean(f1_melissa));
-% fprintf('[Melissa f1 std = %f ]\n', std(f1_melissa));
-% fprintf('[Melissa auc mean = %f ]\n', mean(auc_melissa));
-% fprintf('[Melissa auc std = %f ]\n', std(auc_melissa));
 
 dim = dim_step:dim_step:options.embedding.ndim;
 
 figure(1);
 plot(dim, mean(acc_mu));
-hold on;
-plot(dim, mean(acc_melissa), '--');
+%hold on;
+%plot(dim, mean(acc_melissa), '--');
 
 figure(2);
 plot(dim, mean(f1_mu));
-hold on;
-plot(dim, mean(f1_melissa), '--');
+%hold on;
+%plot(dim, mean(f1_melissa), '--');
 
 figure(3);
 plot(dim, mean(auc_mu));
-hold on;
-plot(dim, mean(auc_melissa), '--');
+%hold on;
+%plot(dim, mean(auc_melissa), '--');
