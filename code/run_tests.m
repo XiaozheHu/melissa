@@ -1,4 +1,4 @@
-clear;clc;
+%clear;clc;
 addpath(genpath('code'));
 addpath(genpath('data'));
 addpath(genpath('mtba'));
@@ -42,7 +42,7 @@ options.embedding.ndim = 1000;
 options.embedding.mustlink_penalty = 1; 
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 10; 
+options.embedding.cannotlink_penalty = 1; 
 
 % chance that the random walk restarts itself
 options.walk.restart_prob = 0.5;
@@ -175,16 +175,19 @@ for i = 1:length(folds)
         % Perform Mashup for comparison
         %-------------------------------
         fprintf('[Performing Mashup]\n');
+        tic;
         [dist_mat,knn] = compute_knn_labelled(x_mu(1:embed_dim,:), k, train_filt);
         [acc, f1, auc, class_score_mashup] = fun_pred_majority_voting(anno, test_filt,train_filt, knn, dist_mat, weighted);
         acc_mu(i,j) = acc;
         f1_mu(i,j)  = f1;
         auc_mu(i,j) = auc;
+        toc;
     
         %-------------------------------
         % Perform Melissa 
         %-------------------------------
         fprintf('[Perfoming Melissa]\n');
+        tic;
         [dist_mat,knn] = compute_knn_labelled(x_melissa(1:embed_dim,1:ngene), k, train_filt);
         %[acc, f1, auc] = matrix_majority_voting(anno, test_filt,train_filt, knn, dist_mat, weighted);
         [acc, f1, auc] = fun_pred_majority_voting_mashup_backup(anno, test_filt,train_filt, knn, dist_mat, class_score_mashup, weighted);
@@ -192,6 +195,7 @@ for i = 1:length(folds)
         acc_melissa(i,j) = acc;
         f1_melissa(i,j)  = f1;
         auc_melissa(i,j) = auc;
+        toc;
     
     end
 

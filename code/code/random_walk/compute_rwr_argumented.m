@@ -10,7 +10,9 @@ function walks = compute_rwr_argumented(network_files, ngene, gene_clusters, opt
     % weights for cannot links
     cannotlink_penalty = options.embedding.cannotlink_penalty; 
 
-    walks = unsupervised_rwr_argumented(network_files, ngene, gene_clusters, ...
+    %walks = unsupervised_rwr_argumented(network_files, ngene, gene_clusters, ...
+    %    restart_prob, mustlink_penalty, cannotlink_penalty);
+    walks = semi_supervised_rwr_argumented(network_files, ngene, gene_clusters, ...
         restart_prob, mustlink_penalty, cannotlink_penalty);
     
 end
