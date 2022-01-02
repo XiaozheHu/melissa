@@ -13,11 +13,11 @@ options.org = 'yeast';
 % which type of annotations to use
 % options: {bp, mf, cc} for human GO,
 %          {level1, level2, level3} for yeast MIPS
-options.onttype = 'mf'; 
+options.onttype = 'bp'; 
 
 % consider terms in a specific size range (GO only)
 % examples: [11 30], [31 100], [101 300]
-options.ontsize = [101 300];
+options.ontsize = [11 30];
      
 % number of kNN
 k=10;
@@ -42,7 +42,7 @@ options.embedding.ndim = 1000;
 options.embedding.mustlink_penalty = 1; 
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 1; 
+options.embedding.cannotlink_penalty = -1; 
 
 % chance that the random walk restarts itself
 options.walk.restart_prob = 0.5;
@@ -154,10 +154,10 @@ for i = 1:length(folds)
     % compute melissa embedding
     fprintf('Compute Melissa embedding \n');
     tic;
-    if (options.embedding.cannotlink_penalty > 0)
-        [x_melissa, d_melissa] = svd_embed_CL(walks_argumented, options.embedding.ndim);
-    else
+    if (options.embedding.cannotlink_penalty == 0)
         [x_melissa, d_melissa] = svd_embed(walks_argumented, options.embedding.ndim);
+    else
+        [x_melissa, d_melissa] = svd_embed_CL(walks_argumented, options.embedding.ndim);
     end
     toc;
     
