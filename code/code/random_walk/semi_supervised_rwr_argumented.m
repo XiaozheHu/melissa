@@ -17,9 +17,16 @@ function walks = semi_supervised_rwr_argumented(network_files, ngene, gene_clust
         
         % argument the network with coarse nodes
         %A = [A, mustlink_penalty*gene_clusters'; mustlink_penalty*gene_clusters, sparse(nclusters, nclusters)];
-        Acc = (-cannotlink_penalty)*ones(nclusters,nclusters);
-        Acc = Acc - diag(diag(Acc));
-        Acc = sparse(Acc);
+        if (cannotlink_penalty >= 0)
+            Acc = (-cannotlink_penalty)*ones(nclusters,nclusters);
+            Acc = Acc - diag(diag(Acc));
+            Acc = sparse(Acc);
+        else % cannotlink_penalty <0, automatically generate negative weightes using MG-type idea
+            D = spdiags(sum(A,2), 0, ngene, ngene);
+            L = D-A;
+            Lcc = gene_clusters*L*gene_clusters';
+            Acc = triu(Lcc,1)+tril(Lcc,-1);
+        end     
         A = [A, mustlink_penalty*gene_clusters'; mustlink_penalty*gene_clusters, Acc];
         
         % get size
