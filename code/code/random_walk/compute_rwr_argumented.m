@@ -12,8 +12,14 @@ function walks = compute_rwr_argumented(network_files, ngene, gene_clusters, opt
 
     %walks = unsupervised_rwr_argumented(network_files, ngene, gene_clusters, ...
     %    restart_prob, mustlink_penalty, cannotlink_penalty);
-    walks = semi_supervised_rwr_argumented(network_files, ngene, gene_clusters, ...
-        restart_prob, mustlink_penalty, cannotlink_penalty);
+    
+    if (mustlink_penalty == -1 && cannotlink_penalty == -1)
+        walks = semi_supervised_rwr_argumented_MG(network_files, ngene, ...
+            gene_clusters, restart_prob);
+    else
+        walks = semi_supervised_rwr_argumented(network_files, ngene, gene_clusters, ...
+            restart_prob, mustlink_penalty, cannotlink_penalty);
+    end
     
 end
 
