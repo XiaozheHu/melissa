@@ -39,10 +39,10 @@ options.embedding.svd_approx = true;
 options.embedding.ndim = 1000; 
 
 % the weight of the edges connecting dummy nodes to true nodes
-options.embedding.mustlink_penalty = -1; 
+options.embedding.mustlink_penalty = 1; 
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = -1; 
+options.embedding.cannotlink_penalty = 1; 
 
 % chance that the random walk restarts itself
 options.walk.restart_prob = 0.5;
