@@ -1,4 +1,4 @@
-function [acc, f1, aupr] = run_svm(x, anno, test_filt)
+function [acc, f1, aupr, gmax, cmax] = run_svm(x, anno, test_filt)
     addpath code/evaluate;
     % Parameters
     gvec = -3:1:0;
@@ -57,7 +57,7 @@ function [acc, f1, aupr] = run_svm(x, anno, test_filt)
                 cmax = ci;
             end
   
-            fprintf('gi:%d, ci:%d, cv_result:%f, ', gi, ci, cv_result); toc(tt)
+            %fprintf('gi:%d, ci:%d, cv_result:%f, ', gi, ci, cv_result); toc(tt)
         end
     end
   
