@@ -1,4 +1,4 @@
-function [acc, f1, aupr] = run_svm(x, anno, test_filt, gmax, cmax)
+function [acc, f1, aupr] = run_svm_fixed_hp(x, anno, test_filt, gmax, cmax)
     addpath code/evaluate;
     % Parameters
     gvec = -3:1:0;

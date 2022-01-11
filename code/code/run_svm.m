@@ -61,6 +61,7 @@ function [acc, f1, aupr, gmax, cmax] = run_svm(x, anno, test_filt)
         end
     end
   
+    fprintf('gmax: %d, cmac: %d, aupr: %f\n', gmax, cmax);
 
     % use the best parameters we computed above
     Ktrain = rbfK{gmax}(~test_filt,~test_filt);

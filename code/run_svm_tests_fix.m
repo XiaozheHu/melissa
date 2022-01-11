@@ -7,7 +7,6 @@ addpath(genpath('libsvm'));
 %------------------------
 % Example parameters
 %------------------------
-
 % use human or yeast data
 options.org = 'yeast';
 
@@ -24,7 +23,7 @@ options.ontsize = [11 30];
 k=10;
 
 % Number of bi-clusters to create (-1 to not bi-cluster)
-options.num_clusters = 4; 
+options.num_clusters = 2; 
 
 % use SVD approximation for Mashup
 % recommended: true for human, false for yeast
@@ -37,13 +36,13 @@ options.embedding.svd_approx = true;
 % number of dimensions
 % this is used as the maximal embeded dimension, tests will be run on
 % different dimensions 
-options.embedding.ndim = 600; 
+options.embedding.ndim = 1000; 
 
 % the weight of the edges connecting dummy nodes to true nodes
 options.embedding.mustlink_penalty = 1; 
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 1; 
+options.embedding.cannotlink_penalty = 0; 
 
 % chance that the random walk restarts itself
 options.walk.restart_prob = 0.5;
@@ -59,6 +58,10 @@ options.test_fraction = 0.2;
                     
 %Logs the options so we can see the parameters used in log file later
 log_options(options);
+
+% fix parameters for SVM
+gmax = 3; 
+cmax = 4;
 
 %------------------------ 
 % Construct network file paths
@@ -136,7 +139,7 @@ clear walks;
 % Perform function prediction by majority voting
 %-----------------------------------------------
 % step size of embeded dimension 
-dim_step = 600;
+dim_step = 25;
 n_dim_test = floor(options.embedding.ndim / dim_step);
 
 % mashup results
@@ -201,7 +204,7 @@ for i = 1:length(folds)
         %-------------------------------
         fprintf('[Performing Mashup]\n');
         tic;
-        [acc, f1, aupr, gmax, cmax] = run_svm(x_mu(1:embed_dim,1:ngene), anno, test_filt);
+        [acc, f1, aupr] = run_svm_fixed_hp(x_mu(1:embed_dim,1:ngene), anno, test_filt, gmax, cmax);
         acc_mu(i,j) = acc;
         f1_mu(i,j)  = f1;
         auc_mu(i,j) = aupr;
@@ -212,7 +215,7 @@ for i = 1:length(folds)
         %-------------------------------
         fprintf('[Perfoming Melissa]\n');
         tic;
-        [acc, f1, aupr, gmax, cmax] =  run_svm(x_melissa(1:embed_dim,1:ngene), anno, test_filt);
+        [acc, f1, aupr] =  run_svm_fixed_hp(x_melissa(1:embed_dim,1:ngene), anno, test_filt, gmax, cmax);
         acc_melissa(i,j) = acc;
         f1_melissa(i,j)  = f1;
         auc_melissa(i,j) = aupr;
@@ -226,18 +229,18 @@ end
 
 dim = dim_step:dim_step:options.embedding.ndim;
 
-% figure(1);
-% plot(dim, mean(acc_mu));
-% hold on;
-% plot(dim, mean(acc_melissa), '--');
-% 
-% figure(2);
-% plot(dim, mean(f1_mu));
-% hold on;
-% plot(dim, mean(f1_melissa), '--');
-% 
-% figure(3);
-% plot(dim, mean(auc_mu));
-% hold on;
-% plot(dim, mean(auc_melissa), '--');
+figure(1);
+plot(dim, mean(acc_mu));
+hold on;
+plot(dim, mean(acc_melissa), '--');
+
+figure(2);
+plot(dim, mean(f1_mu));
+hold on;
+plot(dim, mean(f1_melissa), '--');
+
+figure(3);
+plot(dim, mean(auc_mu));
+hold on;
+plot(dim, mean(auc_melissa), '--');
 
