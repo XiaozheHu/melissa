@@ -1,3 +1,6 @@
+% get 1000 dimensional Mashup embedding and then do SSDR to get low
+% dimensional embeddings 
+
 %clear;clc;
 addpath(genpath('code'));
 addpath(genpath('data'));
@@ -255,14 +258,14 @@ dim = dim_step:dim_step:options.embedding.ndim;
 figure(1);
 plot(dim, mean(acc_mu));
 hold on;
-plot(dim, mean(acc_melissa), '--');
+plot(dim, mean(acc_SSDR), '--');
 
 figure(2);
 plot(dim, mean(f1_mu));
 hold on;
-plot(dim, mean(f1_melissa), '--');
+plot(dim, mean(f1_SSDR), '--');
 
 figure(3);
 plot(dim, mean(auc_mu));
 hold on;
-plot(dim, mean(auc_melissa), '--');
+plot(dim, mean(auc_SSDR), '--');
