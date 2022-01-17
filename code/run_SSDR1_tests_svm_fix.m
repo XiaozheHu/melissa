@@ -16,11 +16,11 @@ options.org = 'yeast';
 % which type of annotations to use
 % options: {bp, mf, cc} for human GO,
 %          {level1, level2, level3} for yeast MIPS
-options.onttype = 'bp';
+options.onttype = 'mf';
 
 % consider terms in a specific size range (GO only)
 % examples: [11 30], [31 100], [101 300]
-options.ontsize = [11 30];
+options.ontsize = [31 100];
 
 % number of kNN
 %options.kNN_neighbor=10;
@@ -48,7 +48,7 @@ options.extra_graph_filt = 0.95;
 
 % number of dimensions
 % recommended: 800 for human, 500 for yeast
-options.embedding.ndim = 500;
+options.embedding.ndim = 1000;
 
 % the weight of the edges connecting dummy nodes to true nodes
 options.embedding.mustlink_penalty = 1;
@@ -235,7 +235,7 @@ for i = 1:length(folds)
         %-------------------------------
         fprintf('Compute SSDR embedding \n');
         tic;
-        X = x_mu(1:embed_dim,:)'*L*(x_mu(1:embed_dim,:))';
+        X = x_mu(1:embed_dim,:)*L*(x_mu(1:embed_dim,:))';
         [V, d] = eigs(X, embed_dim);
         x_SSDR = V'*x_mu(1:embed_dim,:);
         toc;
