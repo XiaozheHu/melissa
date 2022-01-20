@@ -55,7 +55,7 @@ function success = log_options(options)
           fprintf('options.svm.gmax: %f\n', options.svm.gmax);
       end
       if isfield(options.svm, 'cmax')
-          fprintf('options.svm.cmax: %f\n', options.svm.gmax);
+          fprintf('options.svm.cmax: %f\n', options.svm.cmax);
       end 
   end
   

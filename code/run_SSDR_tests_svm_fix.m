@@ -51,7 +51,7 @@ options.embedding.ndim = 1000;
 options.embedding.mustlink_penalty = 1;
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 8;
+options.embedding.cannotlink_penalty = 64;
 
 % whether to add 1/ngene^2 strength constraint between all genes
 %options.embedding.use_unsupervised = false;
@@ -76,7 +76,7 @@ options.kfolds = 5;
 options.test_fraction = 0.2;
 
 % fix parameters for SVM
-options.svm.gmax = 4; 
+options.svm.gmax = 3; 
 options.svm.cmax = 4;
 
 %-----------------------------------------------
@@ -145,6 +145,7 @@ auc_mu = zeros(length(folds), n_dim_test);
 acc_SSDR = zeros(length(folds), n_dim_test);
 f1_SSDR = zeros(length(folds), n_dim_test);
 auc_SSDR = zeros(length(folds), n_dim_test);
+x_SSDR_all{i} = cell(length(folds),1);
 
 %weighted = true;
 %fprintf('weighted: true \n');
@@ -211,6 +212,7 @@ for i = 1:length(folds)
     [V, d] = eigs(x_mu*L*x_mu', options.embedding.ndim);
     x_SSDR = V'*x_mu;
     toc;
+    x_SSDR_all{i} = x_SSDR;
 
     %-------------------------------
     % Perform prediction
@@ -255,14 +257,14 @@ dim = dim_step:dim_step:options.embedding.ndim;
 figure(1);
 plot(dim, mean(acc_mu));
 hold on;
-plot(dim, mean(acc_melissa), '--');
+plot(dim, mean(acc_SSDR), '--');
 
 figure(2);
 plot(dim, mean(f1_mu));
 hold on;
-plot(dim, mean(f1_melissa), '--');
+plot(dim, mean(f1_SSDR), '--');
 
 figure(3);
 plot(dim, mean(auc_mu));
 hold on;
-plot(dim, mean(auc_melissa), '--');
+plot(dim, mean(auc_SSDR), '--');
