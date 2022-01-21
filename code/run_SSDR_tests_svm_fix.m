@@ -162,7 +162,7 @@ for i = 1:length(folds)
     training_labels = anno.*(train_filt.');
      
     % add extra links
-    S = -ones(ngene)/(ngene^2);
+    S = ones(ngene)/(ngene^2);
     % add cannotlink if no label overlaps at all
     % add mustlink if share m_min or more labels
     m_min = 1;
@@ -200,19 +200,19 @@ for i = 1:length(folds)
     %S(S == -2) = 1/(ngene)^2 + 1/Nc;
     %S(S == 1) = 1/(ngene)^2 - CL/Nm;
     
-    S(S == -2) = -1/(ngene)^2 - options.embedding.cannotlink_penalty/Nc;
-    S(S == 1) = -1/(ngene)^2 + options.embedding.mustlink_penalty/Nm;
+    S(S == -2) = 1/(ngene)^2 + options.embedding.cannotlink_penalty/Nc;
+    S(S == 1) = 1/(ngene)^2 - options.embedding.mustlink_penalty/Nm;
     
     if ~isequal(S, S') % symmetrize
       S = (S + S')/2;
     end
 
     S = S - spdiags(diag(S),0,ngene,ngene);
-    L = sum(abs(S),2)-S;
+    L = sum(S,2)-S;
     
     fprintf('Compute SSDR embedding \n');
     tic;
-    [V, d] = eigs(x_mu*L*x_mu', options.embedding.ndim, 'sm');
+    [V, d] = eigs(x_mu*L*x_mu', options.embedding.ndim);
     x_SSDR = V'*x_mu;
     toc;
     x_SSDR_all{i} = x_SSDR;
