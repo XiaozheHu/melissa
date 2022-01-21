@@ -126,11 +126,12 @@ load('walks.mat')
 
 % mu embedding is shared across all folds so we take it before cross-val
 fprintf('Compute Mashup embedding \n');
-tic;
-x_mu = svd_embed(walks, options.embedding.ndim);
-toc;
+%tic;
+%x_mu = svd_embed(walks, options.embedding.ndim);
+%toc;
 %x_full = svd_embed(walks,ngene);
 %x_mu = x_full(1:options.embedding.ndim, :);
+load('x_mu.mat');
 
 %-----------------------------------------------
 % Perform function prediction by majority voting

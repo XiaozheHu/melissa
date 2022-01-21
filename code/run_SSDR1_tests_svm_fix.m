@@ -54,7 +54,7 @@ options.embedding.ndim = 1000;
 options.embedding.mustlink_penalty = 1;
 
 % the weight of the edges connecting dummy nodes to dummy nodes
-options.embedding.cannotlink_penalty = 8;
+options.embedding.cannotlink_penalty = 1;
 
 % whether to add 1/ngene^2 strength constraint between all genes
 %options.embedding.use_unsupervised = false;
@@ -126,11 +126,12 @@ load('walks.mat')
 
 % mu embedding is shared across all folds so we take it before cross-val
 fprintf('Compute Mashup embedding \n');
-tic;
-x_mu = svd_embed(walks, options.embedding.ndim);
-toc;
+%tic;
+%x_mu = svd_embed(walks, options.embedding.ndim);
+%toc;
 %x_full = svd_embed(walks,ngene);
 %x_mu = x_full(1:options.embedding.ndim, :);
+load('x_mu.mat');
 
 %-----------------------------------------------
 % Perform function prediction by majority voting
@@ -199,8 +200,8 @@ for i = 1:length(folds)
     %S(S == -2) = 1/(ngene)^2 + 1/Nc;
     %S(S == 1) = 1/(ngene)^2 - CL/Nm;
     
-    S(S == -2) = 1/(ngene)^2 - options.embedding.cannotlink_penalty/Nc;
-    S(S == 1) = 1/(ngene)^2 + options.embedding.mustlink_penalty/Nm;
+    S(S == -2) = 1/(ngene)^2 + options.embedding.cannotlink_penalty/Nc;
+    S(S == 1) = 1/(ngene)^2 - options.embedding.mustlink_penalty/Nm;
     
     if ~isequal(S, S') % symmetrize
       S = (S + S')/2;
