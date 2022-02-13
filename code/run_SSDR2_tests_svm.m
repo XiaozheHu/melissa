@@ -215,7 +215,8 @@ for i = 1:length(folds)
     tic;
     %[V, d] = eigs(x_mu*L*x_mu', options.embedding.ndim);
     %x_SSDR = V'*x_mu;
-    x_SSDR = ssdr_svd_embed(walks,options.embedding.ndim,L);
+    flag_JL = 1;
+    x_SSDR = ssdr_svd_embed(walks, options.embedding.ndim, L, flag_JL);
     toc;
     x_SSDR_all{i} = x_SSDR;
 
