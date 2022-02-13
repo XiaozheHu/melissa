@@ -1,31 +1,35 @@
-function [x, d] = ssdr_svd_embed(walks, ndim, L)
+function [x, d] = ssdr_svd_embed(walks, ndim, L, flag_JL)
 
   [nnetworks, ngene, ~]  = size(walks);
   
   %RR_sum = zeros(ngene);
-  epsilon = 0.2;  % accuracy 
-  k = ceil((6/(epsilon^2/2 - epsilon^3/3))*log10(ngene));  % low dimension
-  k = max(k, ceil(ndim/nnetworks));
+  if (flag_JL == 1)
+    epsilon = 0.5;  % accuracy 
+    k = ceil((6/(epsilon^2/2 - epsilon^3/3))*log10(ngene));  % low dimension
+    k = max(k, ceil(ndim/nnetworks));
+    R_all = zeros(nnetworks*k, ngene);
+  else
+    R_all = zeros(nnetworks*ngene, ngene);
+  end
   
-  R_all = [];
- 
   for i = 1:nnetworks
+
     W = squeeze(walks(i,:,:));
     
-    %Q = generate_rand_proj( k, ngene, 'dense');
-    
-    %R_all = [R_all; Q*(log(W + 1/ngene))]; % smoothing + random projection
-    R_all = [R_all; (log(W + 1/ngene))];
+    if (flag_JL == 1)
+        Q = generate_rand_proj( k, ngene, 'dense');
+        %R_all = [R_all; Q*(log(W + 1/ngene))]; % smoothing + random projection
+        R_all((i-1)*k+1:i*k, :) = Q*(log(W + 1/ngene));
+    else
+        %R_all = [R_all; (log(W + 1/ngene))];
+        R_all((i-1)*ngene+1:ngene, :) = (log(W + 1/ngene));
+    end
+
     clear W;
-    
-    %R = log(W + 1/ngene); % smoothing
-    %R = full(W);
-    %RR_sum = RR_sum + R * R';
-    %RR_sum = RR_sum + R' * L * R;
-    %clear W R;
   end
-  %clear R Q A;
-  [V, d] = eigs(R_all*L*R_all', ndim);
-  %x = diag(sqrt(sqrt(diag(d)))) * V';
+  
+  temp_mat = R_all*L*R_all';
+  [V, d] = eigs(temp_mat, ndim);
   x = V'*R_all;
+
 end
