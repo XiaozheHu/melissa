@@ -1,0 +1,56 @@
+MELISSA improves the Mashup algorithm, introduced by Cho, Peng and Berger,
+to predict function from multiple protein-protein association networks.
+Compare to Mashup, MELISSA incorporates functional labels in the embedding
+stage to guide a semi-supervised dimension reduction to yield an embedding 
+that captures both the network topology and the information contained in 
+the functional annotations.
+
+MELISSA is available at
+https://github.com/XiaozheHu/melissa
+
+
+
+===================
+External Dependence
+===================
+
+1. MELISSA uses the MTBA package to generate biclusters and the package is available at:
+
+http://home.iitk.ac.in/~jayeshkg/mtba/
+
+Please refer to information and instructions on the MTBA(full name here) website to setup the package in Matlab. 
+
+2. MELISSA uses the same biological network data as Mashup and an updated version of functional labels used in Mashup. In addition, the diffusion and embedding steps are similar to the Mashup algorithm, except the encoding of functional label information. Therefore, we kept the Mashup code to load data, and adapted the part to perform Random Walk with Restart(RWR) diffusion.
+
+
+===========
+Quick Start
+===========
+
+Once the MTBA package is setup, run Matlab file "run_MELISSA_test.m" for a comparison of function prediction performance of Mashup and MELISSA.
+
+====
+Data
+====
+
+The set of networks we consider in this paper are the ones used in Mashup. These are from STRING database v9.1. The GO annotations are from the Gene Ontology Consortium downloaded from FuncAssociate3.0 on 02/12/19.
+
+STRING database: https://string-db.org/
+Gene Ontology Consortium: http://www.geneontology.org
+FuncAssociate3.0: http://llama.mshri.on.ca/funcassociate/download_go_associations
+
+
+========== 
+Need help?
+==========
+
+For any questions and comments, please email lenore.cowen@tufts.edu, xiaozhe.hu@tufts.edu and kaiyiwu0124@gmail.com.
+
+
+===============
+Acknowledgments
+===============
+
+This research was supported by NSF grants DMS-1812503 (to L.C. and X.H.) and the Tufts T-Tripods Institute (NSF grant CCF-1934553) and NSF CC* grant 2018149.
+
+
