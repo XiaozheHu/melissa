@@ -1,4 +1,4 @@
-function [genes, ngene, anno, levels] = load_anno(options)
+function [genes, ngene, anno, levels] = load_anno_wo_filter(options)
     addpath code/load_data
     
     org = options.org;
@@ -13,8 +13,7 @@ function [genes, ngene, anno, levels] = load_anno(options)
         anno = load_mips(onttype, genes);
         levels = 0;
     else
-        [anno, levels] = load_go(org, onttype, genes, ontsize, true); 
-        % [anno, levels] = load_go(org, onttype, genes, ontsize, false); 
+        % [anno, levels] = load_go(org, onttype, genes, ontsize, true); 
+        [anno, levels] = load_go(org, onttype, genes, ontsize, false); 
     end
 end
-

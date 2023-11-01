@@ -1,4 +1,5 @@
 function [anno, golevels, filt] = filter_anno(anno, golevels, thres) % add extra argument and return.
+  fprintf('warning: filter_anno is called \n');
   anno = double(anno > 0);
   termsize = sum(anno, 2);
   

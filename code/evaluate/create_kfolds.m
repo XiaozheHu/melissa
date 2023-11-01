@@ -1,4 +1,4 @@
-function folds = create_kfolds(anno, options)
+function folds = create_kfolds(anno, options,rand_num)
 
 addpath code/evaluate;
 
@@ -9,7 +9,12 @@ ng = size(anno, 2);
 label_filt = (sum(anno) > 0).'; 
 
 ntest = floor(ng / kfolds);
-rng(2021)
+% rng(2021)
+% rng(2023)
+% rng(0)
+% rng(372)
+% rng(275)
+rng(rand_num)
 perm = randperm(ng);
 
 

@@ -33,9 +33,11 @@ function [anno, golevels] = load_go(org, gotype, genes, ontsize, no_overlap)
   
   linkfile = sprintf('%s/graph/go_%s.links', go_path, gotype);
   M = dlmread(linkfile);
+  %hie
   ontgraph = sparse(M(:,1), M(:,2), true, nterm, nterm);
   reachable = get_reachable(ontgraph);
   
+  %don't understand
   goind = cell2mat(values(m, goterm(isKey(m, goterm))));
   anno = (reachable(:,goind) * anno(isKey(m, goterm), :)) > 0; % propagate
   
