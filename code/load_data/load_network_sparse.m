@@ -10,5 +10,6 @@ function A = load_network_sparse(filename, ngene)
     A = (A + A')/2;
     
     % add ones to the diagonal 
-    % A = A + diag(sum(A, 2) == 0);
+    A = A + spdiags((sum(A, 2) == 0), 0, ngene, ngene);
+
   end

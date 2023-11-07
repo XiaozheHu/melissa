@@ -5,7 +5,8 @@
 function walks = unsupervised_rwr_original_sparse(network_files, ngene, restart_prob)
 
   nfiles = length(network_files);
-  walks = zeros(nfiles, ngene, ngene);
+  %walks = zeros(nfiles, ngene, ngene);
+  walks = cell(nfiles,1);
   
   for i=1:nfiles
       
@@ -15,7 +16,7 @@ function walks = unsupervised_rwr_original_sparse(network_files, ngene, restart_
     
     W = rwr_sparse(P, restart_prob);
     
-    walks(i,:,:) = full(W);
+    walks{i} = W;
     
   end
   
